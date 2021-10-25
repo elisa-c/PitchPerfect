@@ -26,18 +26,14 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         super.viewWillAppear(animated)
     }
     
+    // toggles status of the "record" and "stop recording" buttons based on each other; when one is enabled, the other is disabled
     func switchButtonsStatus(isRecording: Bool) {
-        if isRecording {
-            recordButton.isEnabled = false
-            stopRecordingButton.isEnabled = true
-            recordingLabel.text = "Recording in progress"
-        } else {
-            recordButton.isEnabled = true
-            stopRecordingButton.isEnabled = false
-            recordingLabel.text = "Tap to Record"
-        }
+        stopRecordingButton.isEnabled = isRecording
+        recordButton.isEnabled = !isRecording
+        recordingLabel.text = isRecording ? "Recording in progress" : "Tap To Record"
     }
     
+    // starts recording using AVAudioRecorder and storing the result on the file "recordedVoice.wav"
     @IBAction func recordAudio(_ sender: AnyObject) {
         switchButtonsStatus(isRecording: true)
         let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true)[0] as String
@@ -61,6 +57,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         try! audioSession.setActive(false)
     }
     
+    // is called by the AVAudioRecorder when the recording stops, and if it was successful, presents the next view
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if flag {
             performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
